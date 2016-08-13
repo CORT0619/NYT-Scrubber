@@ -29,17 +29,19 @@ var helpers = {
 				for(var i=0; i < numOfArticles; i++){
 					res.push({"title": results.data.response.docs[i].headline.main,
 							  "date": results.data.response.docs[i].pub_date, 
-							  "url": results.data.response.docs[i].web_url,
-							  "id": results.data.response.docs[i]._id});
+							  "url": results.data.response.docs[i].web_url});
 				}
 
-				//return results.data.response.docs;
-
-				//console.log(res);
 				return res;
 			});
 
 	},
+
+	saveArticle: function(){
+
+		return axios.post('/api/saved')
+
+	}
 
 	/*retrieveSavedArticles: function(){
 

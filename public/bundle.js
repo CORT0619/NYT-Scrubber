@@ -19776,22 +19776,21 @@
 		},
 
 		componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-			//componentDidMount: function(){
 
-			//run the query to get the articles
-			helpers.searchArticles(this.state.topic, this.state.startYear, this.state.endYear).then(function (results) {
+			if (prevState.topic != this.state.topic) {
+				console.log("executing...");
 
-				console.log("componentDidUpdate");
-				this.setState({
-					results: results
-				});
+				//run the query to get the articles
+				helpers.searchArticles(this.state.topic, this.state.startYear, this.state.endYear).then(function (results) {
 
-				console.log("res is ", this.state.results);
-			}.bind(this));
-		},
+					console.log("componentDidUpdate");
+					this.setState({
+						results: results
+					});
 
-		componentDidMount: function componentDidMount() {
-			console.log("componentDidMount");
+					console.log("res is ", this.state.results);
+				}.bind(this));
+			}
 		},
 
 		render: function render() {
@@ -19932,13 +19931,12 @@
 						this.props.results.map(function (result) {
 							return React.createElement(
 								'div',
-								{ className: 'well', key: result._id },
+								{ className: 'well', key: result.id },
 								React.createElement(
 									'h4',
 									null,
 									result.title
 								),
-								' ',
 								React.createElement(
 									'a',
 									{ href: '/api/saved' },
@@ -20052,17 +20050,21 @@
 				for (var i = 0; i < numOfArticles; i++) {
 					res.push({ "title": results.data.response.docs[i].headline.main,
 						"date": results.data.response.docs[i].pub_date,
-						"url": results.data.response.docs[i].web_url,
-						"id": results.data.response.docs[i]._id });
+						"url": results.data.response.docs[i].web_url });
 				}
 
-				//return results.data.response.docs;
-
-				//console.log(res);
 				return res;
 			});
+		},
+
+		saveArticle: function saveArticle() {
+
+			return axios.post('/api/saved');
 		}
 
+		/*retrieveSavedArticles: function(){
+	 
+	 }*/
 	};
 
 	module.exports = helpers;

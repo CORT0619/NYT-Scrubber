@@ -40,7 +40,9 @@ var Main = React.createClass({
 	},
 
 	componentDidUpdate: function(prevProps, prevState){
-	//componentDidMount: function(){
+
+		if(prevState.topic != this.state.topic) {
+			console.log("executing...");
 
 		//run the query to get the articles
 		helpers.searchArticles(this.state.topic, this.state.startYear, this.state.endYear)
@@ -53,26 +55,15 @@ var Main = React.createClass({
 
 				console.log("res is ", this.state.results)
 			}.bind(this))
+		}	
 
-	},
-
-	componentDidMount: function(){
-		console.log("componentDidMount");
 	},
 
 	render: function(){
 
 		return (
 			<div className="container">
-
-				{/*<Search key={result._id} results={this.state.results} setTopic={this.setTopic} setStartYear={this.setStartYear} setEndYear={this.setEndYear} />*/}
-
-
-
 				<Search setTopic={this.setTopic} setStartYear={this.setStartYear} setEndYear={this.setEndYear} results={this.state.results} />
-
-							{/*<Search setTopic={this.setTopic} setStartYear={this.setStartYear} setEndYear={this.setEndYear} />*/}
-				
 				<Saved />
 			</div>
 		)
