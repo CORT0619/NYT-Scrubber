@@ -1,10 +1,11 @@
 var React = require('react');
+var createFragment = require('react-addons-create-fragment');
 
 var Search = React.createClass({
 
 	getInitialState: function(){
 
-		return{topic: "", startYear: "", endYear: ""}
+		return{topic: "", startYear: "", endYear: "", children: []}
 	},
 
 	handleChange: function(event){
@@ -52,7 +53,14 @@ var Search = React.createClass({
 				<h3 className="panel-title">Results</h3>
 			</div>
 			<div className="panel-body">
-				Content
+				{this.props.results.map(function(result){
+					return (<div className="well" key={result._id}>
+									<h4>{result.title}</h4> <a href="/api/saved"><button className="saveButton">Save</button></a>
+									<p className="articleContents">Publication Date: {result.date}</p>
+									<p className="articleContents"><a href={result.url}>{result.url}</a></p>
+							</div>);
+
+				})}
 			</div>
 		</div>
 	</div>

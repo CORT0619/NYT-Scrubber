@@ -19745,7 +19745,7 @@
 
 
 		getInitialState: function getInitialState() {
-			return { topic: "", startYear: "", endYear: "" };
+			return { topic: "", startYear: "", endYear: "", results: [] };
 		},
 
 		setTopic: function setTopic(topic) {
@@ -19776,9 +19776,22 @@
 		},
 
 		componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+			//componentDidMount: function(){
 
 			//run the query to get the articles
-			helpers.searchArticles(this.state.topic, this.state.startYear, this.state.endYear);
+			helpers.searchArticles(this.state.topic, this.state.startYear, this.state.endYear).then(function (results) {
+
+				console.log("componentDidUpdate");
+				this.setState({
+					results: results
+				});
+
+				console.log("res is ", this.state.results);
+			}.bind(this));
+		},
+
+		componentDidMount: function componentDidMount() {
+			console.log("componentDidMount");
 		},
 
 		render: function render() {
@@ -19786,7 +19799,7 @@
 			return React.createElement(
 				'div',
 				{ className: 'container' },
-				React.createElement(Search, { setTopic: this.setTopic, setStartYear: this.setStartYear, setEndYear: this.setEndYear }),
+				React.createElement(Search, { setTopic: this.setTopic, setStartYear: this.setStartYear, setEndYear: this.setEndYear, results: this.state.results }),
 				React.createElement(Saved, null)
 			);
 		}
@@ -19799,17 +19812,18 @@
 /* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	var React = __webpack_require__(1);
+	var createFragment = __webpack_require__(182);
 
 	var Search = React.createClass({
-		displayName: "Search",
+		displayName: 'Search',
 
 
 		getInitialState: function getInitialState() {
 
-			return { topic: "", startYear: "", endYear: "" };
+			return { topic: "", startYear: "", endYear: "", children: [] };
 		},
 
 		handleChange: function handleChange(event) {
@@ -19829,93 +19843,128 @@
 		render: function render() {
 
 			return React.createElement(
-				"div",
-				{ className: "main-container" },
+				'div',
+				{ className: 'main-container' },
 				React.createElement(
-					"div",
-					{ className: "panel panel-default" },
+					'div',
+					{ className: 'panel panel-default' },
 					React.createElement(
-						"div",
-						{ className: "panel-heading" },
+						'div',
+						{ className: 'panel-heading' },
 						React.createElement(
-							"h3",
-							{ className: "panel-title" },
-							"Search"
+							'h3',
+							{ className: 'panel-title' },
+							'Search'
 						)
 					),
 					React.createElement(
-						"div",
-						{ className: "panel-body text-center" },
+						'div',
+						{ className: 'panel-body text-center' },
 						React.createElement(
-							"p",
-							{ className: "inputHeader" },
+							'p',
+							{ className: 'inputHeader' },
 							React.createElement(
-								"label",
-								{ htmlFor: "topic" },
-								"Topic"
+								'label',
+								{ htmlFor: 'topic' },
+								'Topic'
 							)
 						),
 						React.createElement(
-							"p",
+							'p',
 							null,
-							React.createElement("input", { type: "text", id: "topic", onChange: this.handleChange, name: "topic", required: true })
+							React.createElement('input', { type: 'text', id: 'topic', onChange: this.handleChange, name: 'topic', required: true })
 						),
 						React.createElement(
-							"p",
-							{ className: "inputHeader" },
+							'p',
+							{ className: 'inputHeader' },
 							React.createElement(
-								"label",
-								{ htmlFor: "startYear" },
-								"Start Year (ex. 2001)"
+								'label',
+								{ htmlFor: 'startYear' },
+								'Start Year (ex. 2001)'
 							)
 						),
 						React.createElement(
-							"p",
+							'p',
 							null,
-							React.createElement("input", { type: "text", id: "startYear", onChange: this.handleChange, name: "startYear" })
+							React.createElement('input', { type: 'text', id: 'startYear', onChange: this.handleChange, name: 'startYear' })
 						),
 						React.createElement(
-							"p",
-							{ className: "inputHeader" },
+							'p',
+							{ className: 'inputHeader' },
 							React.createElement(
-								"label",
-								{ htmlFor: "endYear" },
-								"End Year (ex. 2000)"
+								'label',
+								{ htmlFor: 'endYear' },
+								'End Year (ex. 2000)'
 							)
 						),
 						React.createElement(
-							"p",
+							'p',
 							null,
-							React.createElement("input", { type: "text", id: "endYear", onChange: this.handleChange, name: "endYear" })
+							React.createElement('input', { type: 'text', id: 'endYear', onChange: this.handleChange, name: 'endYear' })
 						),
 						React.createElement(
-							"p",
+							'p',
 							null,
 							React.createElement(
-								"button",
-								{ onClick: this.handleClick, className: "btn btn-default", id: "getArticles" },
-								React.createElement("span", { className: "glyphicon glyphicon-search\r\n", "aria-hidden": "true" }),
-								" Search"
+								'button',
+								{ onClick: this.handleClick, className: 'btn btn-default', id: 'getArticles' },
+								React.createElement('span', { className: 'glyphicon glyphicon-search\r\n', 'aria-hidden': 'true' }),
+								' Search'
 							)
 						)
 					)
 				),
 				React.createElement(
-					"div",
-					{ className: "panel panel-default" },
+					'div',
+					{ className: 'panel panel-default' },
 					React.createElement(
-						"div",
-						{ className: "panel-heading" },
+						'div',
+						{ className: 'panel-heading' },
 						React.createElement(
-							"h3",
-							{ className: "panel-title" },
-							"Results"
+							'h3',
+							{ className: 'panel-title' },
+							'Results'
 						)
 					),
 					React.createElement(
-						"div",
-						{ className: "panel-body" },
-						"Content"
+						'div',
+						{ className: 'panel-body' },
+						this.props.results.map(function (result) {
+							return React.createElement(
+								'div',
+								{ className: 'well', key: result._id },
+								React.createElement(
+									'h4',
+									null,
+									result.title
+								),
+								' ',
+								React.createElement(
+									'a',
+									{ href: '/api/saved' },
+									React.createElement(
+										'button',
+										{ className: 'saveButton' },
+										'Save'
+									)
+								),
+								React.createElement(
+									'p',
+									{ className: 'articleContents' },
+									'Publication Date: ',
+									result.date
+								),
+								React.createElement(
+									'p',
+									{ className: 'articleContents' },
+									React.createElement(
+										'a',
+										{ href: result.url },
+										result.url
+									)
+								)
+							);
+						})
 					)
 				)
 			);
@@ -19979,8 +20028,9 @@
 
 		searchArticles: function searchArticles(topic, sYear, eYear) {
 
+			var res = [];
+			var numOfArticles = 5;
 			var apiKey = '29b207cdc74842d59ebcf2c28cf0b46d';
-
 			var queryURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=' + apiKey + '&q=' + topic;
 
 			if (parseInt(sYear)) {
@@ -19996,8 +20046,20 @@
 			}
 
 			return axios.get(queryURL).then(function (results) {
-
+				console.log("here2");
 				console.log('results are ', results);
+
+				for (var i = 0; i < numOfArticles; i++) {
+					res.push({ "title": results.data.response.docs[i].headline.main,
+						"date": results.data.response.docs[i].pub_date,
+						"url": results.data.response.docs[i].web_url,
+						"id": results.data.response.docs[i]._id });
+				}
+
+				//return results.data.response.docs;
+
+				//console.log(res);
+				return res;
 			});
 		}
 
@@ -21216,6 +21278,82 @@
 	  };
 	};
 
+
+/***/ },
+/* 182 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(183).create;
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactFragment
+	 */
+
+	'use strict';
+
+	var ReactChildren = __webpack_require__(110);
+	var ReactElement = __webpack_require__(42);
+
+	var emptyFunction = __webpack_require__(15);
+	var invariant = __webpack_require__(13);
+	var warning = __webpack_require__(25);
+
+	/**
+	 * We used to allow keyed objects to serve as a collection of ReactElements,
+	 * or nested sets. This allowed us a way to explicitly key a set a fragment of
+	 * components. This is now being replaced with an opaque data structure.
+	 * The upgrade path is to call React.addons.createFragment({ key: value }) to
+	 * create a keyed fragment. The resulting data structure is an array.
+	 */
+
+	var numericPropertyRegex = /^\d+$/;
+
+	var warnedAboutNumeric = false;
+
+	var ReactFragment = {
+	  // Wrap a keyed object in an opaque proxy that warns you if you access any
+	  // of its properties.
+	  create: function (object) {
+	    if (typeof object !== 'object' || !object || Array.isArray(object)) {
+	      process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment only accepts a single object. Got: %s', object) : undefined;
+	      return object;
+	    }
+	    if (ReactElement.isValidElement(object)) {
+	      process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment does not accept a ReactElement ' + 'without a wrapper object.') : undefined;
+	      return object;
+	    }
+
+	    !(object.nodeType !== 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'React.addons.createFragment(...): Encountered an invalid child; DOM ' + 'elements are not valid children of React components.') : invariant(false) : undefined;
+
+	    var result = [];
+
+	    for (var key in object) {
+	      if (process.env.NODE_ENV !== 'production') {
+	        if (!warnedAboutNumeric && numericPropertyRegex.test(key)) {
+	          process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment(...): Child objects should have ' + 'non-numeric keys so ordering is preserved.') : undefined;
+	          warnedAboutNumeric = true;
+	        }
+	      }
+	      ReactChildren.mapIntoWithKeyPrefixInternal(object[key], result, key, emptyFunction.thatReturnsArgument);
+	    }
+
+	    return result;
+	  }
+	};
+
+	module.exports = ReactFragment;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }
 /******/ ]);

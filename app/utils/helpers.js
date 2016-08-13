@@ -4,9 +4,10 @@ var helpers = {
 
 	searchArticles: function(topic, sYear, eYear){
 
+		var res = [];
+		var numOfArticles = 5;
 		var apiKey = '29b207cdc74842d59ebcf2c28cf0b46d';
-
-		var queryURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=' + apiKey +'&q='+ topic 
+		var queryURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=' + apiKey +'&q='+ topic
 
 		if(parseInt(sYear)){
 
@@ -20,11 +21,22 @@ var helpers = {
 			queryURL = queryURL + '&end_date='+ eYear;
 		}
 	
-
 		return axios.get(queryURL)
 			.then(function(results){
-
+				console.log("here2");
 				console.log('results are ', results);
+
+				for(var i=0; i < numOfArticles; i++){
+					res.push({"title": results.data.response.docs[i].headline.main,
+							  "date": results.data.response.docs[i].pub_date, 
+							  "url": results.data.response.docs[i].web_url,
+							  "id": results.data.response.docs[i]._id});
+				}
+
+				//return results.data.response.docs;
+
+				//console.log(res);
+				return res;
 			});
 
 	},
